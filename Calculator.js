@@ -1,9 +1,34 @@
 export default class Calculator {
-  constructor(primaryOperand, secondaryOperand, operator) {
-    this.primaryOperand = primaryOperand;
-    this.secondaryOperand = secondaryOperand;
-    this.operator = operator;
+  constructor(primaryOperandDisplay, secondaryOperandDisplay, operator) {
+    this.primaryOperandDisplay = primaryOperandDisplay;
+    this.secondaryOperandDisplay = secondaryOperandDisplay;
+    this.operatorDisplay = operator;
     this.allClear();
+  }
+
+  // --- Getter & Setters ---
+  get primaryOperand() {
+    return this.primaryOperandDisplay.textContent;
+  }
+
+  set primaryOperand(value) {
+    this.primaryOperandDisplay.textContent = value;
+  }
+
+  get secondaryOperand() {
+    return this.secondaryOperandDisplay.textContent;
+  }
+
+  set secondaryOperand(value) {
+    this.secondaryOperandDisplay.textContent = value;
+  }
+
+  get operator() {
+    return this.operatorDisplay.textValue;
+  }
+
+  set operator(value) {
+    this.operatorDisplay.textValue = value;
   }
 
   #operatorDict = {
@@ -14,52 +39,43 @@ export default class Calculator {
   };
 
   addDigit(num) {
-    if (this.primaryOperand.textContent === ".")
-      this.primaryOperand.textContent = "0.";
-    if (this.primaryOperand.textContent === "0")
-      this.primaryOperand.textContent = num;
+    if (this.primaryOperand === ".") this.primaryOperand = "0.";
+    if (this.primaryOperand === "0") this.primaryOperand = num;
     else {
-      this.primaryOperand.textContent += num;
-      this.primaryOperand.textContent = this.#formatNumber(
-        this.primaryOperand.textContent
-      );
+      this.primaryOperand += num;
+      this.primaryOperand = this.#formatNumber(this.primaryOperand);
     }
   }
 
   addOperation(operation) {
-    this.secondaryOperand.textContent = this.primaryOperand.textContent;
-    this.operator.textContent = operation;
-    this.primaryOperand.textContent = 0;
+    this.secondaryOperand = this.primaryOperand;
+    this.operator = operation;
+    this.primaryOperand = 0;
   }
 
   removeDigit() {
-    if (this.primaryOperand.textContent.length <= 1) {
-      this.primaryOperand.textContent = "0";
+    if (this.primaryOperand.length <= 1) {
+      this.primaryOperand = "0";
       return;
     }
     if (this.#checkEdgeCase(2)) return;
-    let num = this.#formatNumber(this.primaryOperand.textContent);
-    this.primaryOperand.textContent = this.#formatNumber(
-      num.slice(0, num.length - 1)
-    );
+    let num = this.#formatNumber(this.primaryOperand);
+    this.primaryOperand = this.#formatNumber(num.slice(0, num.length - 1));
   }
 
   allClear() {
-    this.primaryOperand.textContent = 0;
-    this.secondaryOperand.textContent = "";
-    this.operator.textContent = "";
+    this.primaryOperand = 0;
+    this.secondaryOperand = "";
+    this.operator = "";
   }
 
   evaluate() {
     if (this.#checkEdgeCase(1)) return;
-    let firstNum = this.#convertBackToNum(this.primaryOperand.textContent);
-    let secondNum = this.#convertBackToNum(this.secondaryOperand.textContent);
-    const result = this.#operatorDict[this.operator.textContent](
-      firstNum,
-      secondNum
-    );
+    let firstNum = this.#convertBackToNum(this.primaryOperand);
+    let secondNum = this.#convertBackToNum(this.secondaryOperand);
+    const result = this.#operatorDict[this.operator](firstNum, secondNum);
     this.allClear();
-    this.primaryOperand.textContent = this.#formatNumber(result.toString());
+    this.primaryOperand = this.#formatNumber(result.toString());
   }
 
   // --- Helper function to format the number ---
@@ -78,17 +94,14 @@ export default class Calculator {
   #checkEdgeCase(version) {
     if (version === 1) {
       if (
-        this.primaryOperand.textContent === "" ||
-        this.primaryOperand.textContent === "0" ||
-        this.secondaryOperand.textContent === ""
+        this.primaryOperand === "" ||
+        this.primaryOperand === "0" ||
+        this.secondaryOperand === ""
       )
         return true;
     }
     if (version === 2) {
-      if (
-        this.primaryOperand.textContent === "" ||
-        this.primaryOperand.textContent === "0"
-      )
+      if (this.primaryOperand === "" || this.primaryOperand === "0")
         return true;
     }
   }
