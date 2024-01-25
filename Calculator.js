@@ -39,10 +39,10 @@ export default class Calculator {
   };
 
   addDigit(num) {
-    if (this.primaryOperand === ".") this.primaryOperand = "0.";
+    if (num === "." && this.primaryOperand.includes(".")) return;
     if (this.primaryOperand === "0") this.primaryOperand = num;
     else {
-      this.primaryOperand += num;
+      this.primaryOperand += num.toString();
       this.primaryOperand = this.#formatNumber(this.primaryOperand);
     }
   }
@@ -73,13 +73,18 @@ export default class Calculator {
     if (this.#checkEdgeCase(1)) return;
     let firstNum = this.#convertBackToNum(this.primaryOperand);
     let secondNum = this.#convertBackToNum(this.secondaryOperand);
-    const result = this.#operatorDict[this.operator](firstNum, secondNum);
+    const result = this.#operatorDict
+      [this.operator](firstNum, secondNum)
+      .toFixed(1);
     this.allClear();
     this.primaryOperand = this.#formatNumber(result.toString());
   }
 
   // --- Helper function to format the number ---
   #formatNumber(num) {
+    if (num.includes(".")) {
+      return num.toLocaleString();
+    }
     return this.#convertBackToNum(num).toLocaleString();
   }
 
